@@ -12,8 +12,30 @@ services:
       - .:/usr/src/app
     command: air ./cmd/main.go -b 0.0.0.0
     networks:
-      - postgres-db_jobs
+      - jobs
+  db:
+    container_name: jobs_db
+    image: postgres:alpine
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - 5432:5432
+    expose:
+      - 5432
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    networks:
+      - jobs
+
+volumes:
+  postgres-db:
+    name: jobs-db-volume
 
 networks:
-  postgres-db_jobs:
-    external: true
+  jobs:
+    name: jobs
+    driver: bridge
