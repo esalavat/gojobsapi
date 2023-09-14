@@ -12,8 +12,8 @@ services:
       - .:/usr/src/app
     command: air ./cmd/main.go -b 0.0.0.0
     networks:
-      - postgres_jobs
+      - postgres-db_jobs
 
 networks:
-  postgres_jobs:
+  postgres-db_jobs:
     external: true
