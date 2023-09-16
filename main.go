@@ -26,6 +26,7 @@ func setupRoutes(app *fiber.App) {
 	app.Get("/jobs", routes.GetJobs)
 	app.Get("/jobs/:id", routes.GetJob)
 	app.Put("/jobs/:id", routes.UpdateJob)
+	app.Delete("/jobs/:id", routes.DeleteJob)
 }
 
 func handleRoot(c *fiber.Ctx) error {

@@ -87,3 +87,23 @@ func UpdateJob(c *fiber.Ctx) error {
 
 	return c.Status(200).JSON(responseJob)
 }
+
+func DeleteJob(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return c.Status(400).JSON("Could not parse :id param.")
+	}
+
+	var job models.Job
+
+	db.Database.Find(&job, "id = ?", id)
+
+	if job.Id == 0 {
+		return c.Status(400).JSON("User does not exist.")
+	}
+
+	db.Database.Delete(job)
+
+	return c.Status(204).Send(nil)
+}
