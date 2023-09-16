@@ -25,6 +25,7 @@ func setupRoutes(app *fiber.App) {
 	app.Post("/jobs", routes.CreateJob)
 	app.Get("/jobs", routes.GetJobs)
 	app.Get("/jobs/:id", routes.GetJob)
+	app.Put("/jobs/:id", routes.UpdateJob)
 }
 
 func handleRoot(c *fiber.Ctx) error {

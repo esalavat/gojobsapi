@@ -1,28 +1,11 @@
 package routes
 
 import (
+	"github.com/esalavat/gojobsapi/api"
 	"github.com/esalavat/gojobsapi/db"
-	"github.com/esalavat/gojobsapi/db/models"
+	"github.com/esalavat/gojobsapi/models"
 	"github.com/gofiber/fiber/v2"
 )
-
-// type Job struct {
-// 	Id          int       `json:"id"`
-// 	Company     string    `json:"company"`
-// 	JobTitle    string    `json:"job_title"`
-// 	DateApplied time.Time `json:"date_applied"`
-// 	JobUrl      string    `json:"job_url"`
-// }
-
-// func CreateResponseJob(jobModel models.Job) Job {
-// 	return Job{
-// 		Id:          jobModel.Id,
-// 		Company:     jobModel.Company,
-// 		JobTitle:    jobModel.JobTitle,
-// 		DateApplied: jobModel.DateApplied,
-// 		JobUrl:      jobModel.JobUrl,
-// 	}
-// }
 
 func CreateJob(c *fiber.Ctx) error {
 	var job models.Job
@@ -33,7 +16,9 @@ func CreateJob(c *fiber.Ctx) error {
 
 	db.Database.Create(&job)
 
-	return c.Status(200).JSON(&job)
+	responseJob := api.CreateResponseJob(job)
+
+	return c.Status(200).JSON(responseJob)
 }
 
 func GetJobs(c *fiber.Ctx) error {
@@ -41,7 +26,13 @@ func GetJobs(c *fiber.Ctx) error {
 
 	db.Database.Find(&jobs)
 
-	return c.Status(200).JSON(jobs)
+	responseJobs := []api.Job{}
+	for _, job := range jobs {
+		responseJob := api.CreateResponseJob(job)
+		responseJobs = append(responseJobs, responseJob)
+	}
+
+	return c.Status(200).JSON(responseJobs)
 }
 
 func GetJob(c *fiber.Ctx) error {
@@ -59,5 +50,40 @@ func GetJob(c *fiber.Ctx) error {
 		return c.Status(400).JSON("User does not exist.")
 	}
 
-	return c.Status(400).JSON(job)
+	responseJob := api.CreateResponseJob(job)
+
+	return c.Status(400).JSON(responseJob)
+}
+
+func UpdateJob(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+
+	if err != nil {
+		return c.Status(400).JSON("Could not parse :id param.")
+	}
+
+	var job models.Job
+
+	db.Database.Find(&job, "id = ?", id)
+
+	if job.Id == 0 {
+		return c.Status(400).JSON("User does not exist.")
+	}
+
+	var updateData api.UpdateJob
+
+	if err := c.BodyParser(&updateData); err != nil {
+		return c.Status(400).JSON(err.Error())
+	}
+
+	job.Company = updateData.Company
+	job.JobTitle = updateData.JobTitle
+	job.DateApplied = updateData.DateApplied
+	job.JobUrl = updateData.JobUrl
+
+	db.Database.Save(&job)
+
+	responseJob := api.CreateResponseJob(job)
+
+	return c.Status(200).JSON(responseJob)
 }
