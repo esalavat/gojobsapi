@@ -24,7 +24,7 @@ func CreateJob(c *fiber.Ctx) error {
 func GetJobs(c *fiber.Ctx) error {
 	jobs := []models.Job{}
 
-	db.Database.Find(&jobs)
+	db.Database.Model(&models.Job{}).Preload("Updates").Find(&jobs)
 
 	responseJobs := []api.Job{}
 	for _, job := range jobs {
@@ -44,7 +44,7 @@ func GetJob(c *fiber.Ctx) error {
 
 	var job models.Job
 
-	db.Database.Find(&job, "id = ?", id)
+	db.Database.Model(&models.Job{}).Preload("Updates").Find(&job, "id = ?", id)
 
 	if job.Id == 0 {
 		return c.Status(400).JSON("User does not exist.")
@@ -64,7 +64,7 @@ func UpdateJob(c *fiber.Ctx) error {
 
 	var job models.Job
 
-	db.Database.Find(&job, "id = ?", id)
+	db.Database.Model(&models.Job{}).Preload("Updates").Find(&job, "id = ?", id)
 
 	if job.Id == 0 {
 		return c.Status(400).JSON("User does not exist.")
@@ -80,6 +80,7 @@ func UpdateJob(c *fiber.Ctx) error {
 	job.JobTitle = updateData.JobTitle
 	job.DateApplied = updateData.DateApplied
 	job.JobUrl = updateData.JobUrl
+	job.Updates = api.CreateModelUpdates(updateData.Updates)
 
 	db.Database.Save(&job)
 
@@ -97,12 +98,18 @@ func DeleteJob(c *fiber.Ctx) error {
 
 	var job models.Job
 
-	db.Database.Find(&job, "id = ?", id)
+	db.Database.Model(&models.Job{}).Preload("Updates").Find(&job, "id = ?", id)
 
 	if job.Id == 0 {
 		return c.Status(400).JSON("User does not exist.")
 	}
 
+	var ids []int
+	for _, update := range job.Updates {
+		ids = append(ids, update.Id)
+	}
+
+	db.Database.Delete(&models.Update{}, ids)
 	db.Database.Delete(job)
 
 	return c.Status(204).Send(nil)

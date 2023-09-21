@@ -12,6 +12,7 @@ type Job struct {
 	JobTitle    string    `json:"jobTitle"`
 	DateApplied time.Time `json:"dateApplied"`
 	JobUrl      string    `json:"jobUrl"`
+	Updates     []Update  `json:"updates"`
 }
 
 func CreateResponseJob(jobModel models.Job) Job {
@@ -21,6 +22,7 @@ func CreateResponseJob(jobModel models.Job) Job {
 		JobTitle:    jobModel.JobTitle,
 		DateApplied: jobModel.DateApplied,
 		JobUrl:      jobModel.JobUrl,
+		Updates:     CreateResponseUpdates(jobModel.Updates),
 	}
 }
 
@@ -29,4 +31,5 @@ type UpdateJob struct {
 	JobTitle    string    `json:"jobTitle"`
 	DateApplied time.Time `json:"dateApplied"`
 	JobUrl      string    `json:"jobUrl"`
+	Updates     []Update  `json:"updates"`
 }
