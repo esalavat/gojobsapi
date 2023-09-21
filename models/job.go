@@ -10,5 +10,5 @@ type Job struct {
 	JobTitle    string    `gorm:"job_title"`
 	DateApplied time.Time `gorm:"date_applied"`
 	JobUrl      string    `gorm:"job_url"`
-	Updates     []Update  `gorm:"foreignKey:job_id;constraint:OnDelete:CASCADE"`
+	Updates     []Update  `gorm:"foreignKey:job_id"`
 }
