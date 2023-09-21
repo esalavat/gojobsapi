@@ -52,7 +52,7 @@ func GetJob(c *fiber.Ctx) error {
 
 	responseJob := api.CreateResponseJob(job)
 
-	return c.Status(400).JSON(responseJob)
+	return c.Status(200).JSON(responseJob)
 }
 
 func UpdateJob(c *fiber.Ctx) error {
