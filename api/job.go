@@ -15,6 +15,18 @@ type Job struct {
 	Updates     []Update  `json:"updates"`
 }
 
+func CreateModelJob(jobApi Job) models.Job {
+	return models.Job{
+		Id:          jobApi.Id,
+		Company:     jobApi.Company,
+		JobTitle:    jobApi.JobTitle,
+		DateApplied: jobApi.DateApplied,
+		JobUrl:      jobApi.JobUrl,
+		Updates:     CreateModelUpdates(jobApi.Updates),
+	}
+}
+
+
 func CreateResponseJob(jobModel models.Job) Job {
 	return Job{
 		Id:          jobModel.Id,

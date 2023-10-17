@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"log"
+
 	"github.com/esalavat/gojobsapi/api"
 	"github.com/esalavat/gojobsapi/db"
 	"github.com/esalavat/gojobsapi/models"
@@ -8,15 +10,19 @@ import (
 )
 
 func CreateJob(c *fiber.Ctx) error {
-	var job models.Job
+	var job api.Job
 
 	if err := c.BodyParser(&job); err != nil {
+		log.Println("Error on parse");
+		log.Println(err);
 		return c.Status(400).JSON(err.Error())
 	}
 
-	db.Database.Create(&job)
+	var modelJob = api.CreateModelJob(job);
 
-	responseJob := api.CreateResponseJob(job)
+	db.Database.Create(&modelJob)
+
+	responseJob := api.CreateResponseJob(modelJob)
 
 	return c.Status(200).JSON(responseJob)
 }
